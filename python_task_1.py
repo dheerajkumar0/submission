@@ -115,5 +115,17 @@ def time_check(df)->pd.Series:
         pd.Series: return a boolean series
     """
     # Write your logic here
+     df['start_datetime'] = pd.to_datetime(df['startDay'] + ' ' + df['startTime'])
+    df['end_datetime'] = pd.to_datetime(df['endDay'] + ' ' + df['endTime'])
+      full_day_range = pd.date_range('00:00:00', '23:59:59', freq='1H').time
+      full_day_df = pd.DataFrame({'time': full_day_range, 'dummy': 1})
+      merged_df = pd.merge(df, full_day_df, how='cross')
+     Svalid_timestamps = merged_df[(merged_df['time'] >= merged_df['start_datetime'].dt.time) &
+                                 (merged_df['time'] <= merged_df['end_datetime'].dt.time)]
+    result_series = valid_timestamps.groupby(['id', 'id_2']).size().eq(len(full_day_range) * 7)
+
+    return result_series
+
+
 
     return pd.Series()
